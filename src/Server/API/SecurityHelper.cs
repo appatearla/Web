@@ -13,8 +13,8 @@ namespace API
     {
         private static readonly IConfigurationManager<OpenIdConnectConfiguration> configurationManager;
 
-        private static readonly string ISSUER = Env; // TODO - enter your Auth0 URL i.e. "https://wolftracker.auth0.com/"
-        private static readonly string AUDIENCE = ""; // TODO - enter your audience here. i.e. "https://api.wolftracker.com"
+        private static readonly string ISSUER = System.Environment.GetEnvironmentVariable("Issuer"); 
+        private static readonly string AUDIENCE = System.Environment.GetEnvironmentVariable("Audience");
 
         static SecurityHelper()
         {
