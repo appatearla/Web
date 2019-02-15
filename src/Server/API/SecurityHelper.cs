@@ -1,22 +1,22 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API
 {
-    public static class Security
+    public static class SecurityHelper
     {
         private static readonly IConfigurationManager<OpenIdConnectConfiguration> configurationManager;
 
-        private static readonly string ISSUER = ""; // TODO - enter your Auth0 URL i.e. "https://wolftracker.auth0.com/"
+        private static readonly string ISSUER = Env; // TODO - enter your Auth0 URL i.e. "https://wolftracker.auth0.com/"
         private static readonly string AUDIENCE = ""; // TODO - enter your audience here. i.e. "https://api.wolftracker.com"
 
-        static Security()
+        static SecurityHelper()
         {
             var documentRetriever = new HttpDocumentRetriever {RequireHttps = ISSUER.StartsWith("https://")};
 
@@ -27,9 +27,13 @@ namespace API
             );
         }
 
-        public static async Task<ClaimsPrincipal> ValidateTokenAsync(string value)
+        public static async Task<ClaimsPrincipal> ValidateTokenAsync(HttpRequest req)
         {
-            if (!value.Contains("Bearer")) { 
+            req.Headers.TryGetValue("Authentication", out var headerValue);
+            var value = headerValue.ToString();
+
+            if (string.IsNullOrEmpty(value) || !value.Contains("Bearer"))
+            {
                 return null;
             }
 

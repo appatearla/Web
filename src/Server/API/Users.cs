@@ -1,15 +1,9 @@
-using System;
-using System.IO;
 using System.Threading.Tasks;
-using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Security.Claims;
-using Microsoft.Extensions.Primitives;
 
 namespace API
 {
@@ -22,15 +16,14 @@ namespace API
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            var principal = await SecurityHelper.ValidateTokenAsync(req);
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            return new OkObjectResult(string.Empty);
         }
 
         [FunctionName("Users_Get")]
@@ -40,15 +33,14 @@ namespace API
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            var principal = await SecurityHelper.ValidateTokenAsync(req);
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            return new OkObjectResult(string.Empty);
         }
 
         [FunctionName("Users_Post")]
@@ -58,13 +50,14 @@ namespace API
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            var principal = await SecurityHelper.ValidateTokenAsync(req);
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-            return new OkResult();
+            return new OkObjectResult(string.Empty);
         }
 
         [FunctionName("Users_Put")]
@@ -74,15 +67,14 @@ namespace API
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            var principal = await SecurityHelper.ValidateTokenAsync(req);
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            if (principal == null)
+            {
+                return new UnauthorizedResult();
+            }
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            return new OkObjectResult(string.Empty);
         }
 
         [FunctionName("Users_Delete")]
@@ -92,22 +84,14 @@ namespace API
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            ClaimsPrincipal principal;
-            req.Headers.Authorization;
-            if (token == null || (principal = await Security.ValidateTokenAsync(token.ToString()) == null)
+            var principal = await SecurityHelper.ValidateTokenAsync(req);
+
+            if (principal == null)
             {
                 return new UnauthorizedResult();
             }
 
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            return new OkObjectResult(string.Empty);
         }
     }
 }
