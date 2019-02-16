@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
-    "deploy": "firebase deploy --project appatearla"
+    "deploy": "vue-cli-service build && firebase deploy --project appatearla"
   },
   "dependencies": {
     "auth0-js": "^9.10.0",
